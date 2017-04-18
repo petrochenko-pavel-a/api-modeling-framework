@@ -11,7 +11,7 @@ Changes on the current interfaces and vocabularies are to be expected, as well a
 
 ## Demo
 
-A demo web application, displaying some of the capabilities of the project [can be found here](https://mulesoft-labs.github.io/amf-playground/app/).
+A demo web application, displaying some of the capabilities of the project [can be found here](https://mulesoft-labs.github.io/amf-playground/).
 
 ## Goals
 
