@@ -10,6 +10,8 @@ The API Modeling Framework (AMF) allows users to formally describe different kin
 
 ![Overview](https://raml-org.github.io/api-modeling-framework/images/diagram.png)
 
+## Status
+
 AMF is alpha and under active development. There are [known gaps](https://github.com/raml-org/api-modeling-framework#implementation-progress) documented on the AMF Github repo.
 
 No artifacts have been pushed yet to any repository but the current version of the library can be built from the source code in this project.
