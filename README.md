@@ -1,4 +1,8 @@
-# API Modeling Framework ![Build Status](https://travis-ci.com/raml-org/api-modeling-framework.svg?token=ueejPvNfLJQ28ZqmJyUt&branch=master)
+# API Modeling Framework
+
+This project aims to provide a common programming interface that lets developers interact with any API specification, whether it is written in OAS or RAML, in a similar way to how the HTML DOM allows programmatic interaction with an HTML document. 
+
+MuleSoft provides a [playground website](https://mulesoft-labs.github.io/amf-playground/app/) for everyone to preview and play with AMF and its capabilities like interoperability, introspection, and more.
 
 ## Vision
 
@@ -8,23 +12,10 @@ The API Modeling Framework (AMF) allows users to formally describe different kin
 
 ## Status
 
-AMF is experimental and under active development.
+AMF is alpha and under active development. There are [known gaps](https://github.com/raml-org/api-modeling-framework#implementation-progress) documented on the AMF Github repo.
+
 No artifacts have been pushed yet to any repository but the current version of the library can be built from the source code in this project.
 Changes to the current interfaces and vocabularies are to be expected, as well as a possible split of the library into smaller units.
-
-## Demo
-
-A demo web application, displaying some of the capabilities of the project [can be found here](https://mulesoft-labs.github.io/amf-playground/app/).
-
-## Goals
-
-- Support for multiple languages with a unified output API/model for clients
-- Support for both, document (RAML modularity) and domain (service clients), layers
-- Bi-directional transformation
-- Support for validation at document and service layers
-- Produce a formal specification for the language
-- Extensible, single document model for multiple domain vocabularies
-- Consistent parsing behaviour
 
 ## Concepts
 
@@ -90,159 +81,20 @@ AMF uses a formal data shape validation language in the model to provide validat
 AMF provide a formal way of describing the vocabularies in the Domain Model, using W3C standards like OWL and RDF Schema. Using formal description tools allow us to reduce the ambiguity in the description of APIs and opens the door to interesting applications like logical inference.
 Other W3C standards like RDF as the logical model for the hypermedia data graph of linked APIs or SHACL for data and constraint validation are also used. Using standards allows us not to reinvent the wheel but to build on top of well understood technologies with broad support across languages and platforms.
 
-
 ## Architecture
 
-![Architectural diagram](doc/images/arch.png)
+![Architectural diagram](https://raml-org.github.io/api-modeling-framework/images/arch.png)
 
 The current architecture relies on a collection of parsers and generators for RAML, OpenAPI and JSON-LD (native RDF serialisation). These parsers follow the linked API descriptions in the document model and generate RDF graph data according to the semantics of the HTTP/RPC and data shapes vocabularies.
 
 The resolution service can then be used to combine the information from all these documents in the graph into a single Domain Model resolved graph.
 Any subset of the original or resolved graph can be exported back as RAML, OpenAPI or JSON-LD syntaxes.
 
-
-## Installation
-
-The API Modeling Framework Github's repository includes can be used to build the following artifacts:
-
-- API Modeling Framework Clojure/JVM JAR library
-- API Modeling Framework Clojurescript/Node NPM package
-- API Modeling Framework Clojurescript/Web library
-
-The following leiningen invocations can be used to build each of this artifacts:
-
-
-### API Modeling Framework Clojure/JVM library
-
-``` shell
-$ lein jar
-```
-
-### API Modeling Framework Clojurescript/Node library
-
-``` shell
-$ lein npm install # this is only required on the first run
-$ lein node
-```
-
-The output NPM package will be generated at `output/node`.
-
-
-### API Modeling Framework Clojurescript/Node library
-
-``` shell
-$ lein web
-```
-
-The output JS library will be generated at `output/web`.
-
-
-## Tests
-
-The project includes two different test suites, one for the Clojure/JVM code and another one for the Clojruescript/JS code.
-
-Tests can be run using the following leiningen invocations:
-
-### Clojure/JVM tests
-
-``` shell
-$ lein test
-```
-
-### Clojurescript/JS tests
-
-``` shell
-$ lein npm install # this is only required on the first run
-$ lein test-js
-```
-
 ## Vocabularies
 
 The OWL ontology for the AMF vocabularies (document and domain models) [can be found here](https://github.com/raml-org/api-modeling-framework/blob/master/vocabulary/raml.ttl).
 Reference documentation for the ontology can be found [here](https://raml-org.github.io/api-modeling-framework/vocabularies.html).
 
-## Implementation Progress
+## Contribution
 
-The following tables show the current support of the project for different syntactical elements of RAML, OpenAPI, RAML Types and JSONSchema.
-
-
-**RAML Nodes**
-
-| Node type | Status |
-|----------|-----------|
-| API  | partial, missing properties |
-| DocumentationItem | missing |
-| Resource | partial, missing properties |
-| Method | partial, missing properties
-| Response |complete |
-| RequestBody | complete |
-| ResponseBody | complete |
-| Example | missing |
-| ResourceType | missing |
-| Trait | partial, missing properties |
-| SecurityScheme | missing |
-| SecuritySchemeSettings | missing |
-| AnnotationType | coplete |
-| Library | complete |
-| Overlay | missing |
-| Extension | missing |
-
-
-**RAML Types**
-
-
-| Node type | Status |
-|----------|-----------|
-| Any type | complete |
-| Object type | partial, missing properties |
-| Array type | complete |
-| Scalar types | partial, missing properties |
-| Union types | partial, missing properties |
-| XML type | complete |
-| JSON type | complete |
-
-
-**Open API Nodes**
-
-| Node type | Status |
-|----------|-----------|
-| Swagger | partial, missing properties |
-| Info | partial, missing properties |
-| Contact | missing |
-| License | missing |
-| Path Item | complete |
-| Operation | partial, missing properties |
-| External Documentation | missing |
-| Parameter | partial, missing properties |
-| Items | partial, missing properties |
-| Responses | complete |
-| Response | partial, missing properties |
-| Headers | complete |
-| Header | partial, missing properties |
-| Tag | complete |
-| XML | missing |
-
-
-**JSON Schema**
-
-| Node type | Status |
-|----------|-----------|
-| String type | partial, missing properties |
-| Numeric types | partial, missing properties |
-| Object type | partial, missing properties |
-| Array type | complete |
-| Boolean type | complete |
-| Null type | complete |
-| Schema combinations | partial, missing properties |
-
-
-## TCK
-
-As part of the development of the library, we are developing a cross-language version of the [RAML TCK](https://github.com/raml-org/raml-tck).
-The list of test cases currently supporte can be found in the [tck](https://github.com/raml-org/api-modeling-framework/tree/master/resources/tck/raml-1.0) directory of the repository
-
-## License
-
-Licensed under the Apache 2.0 License
-
-Copyright 2017 MuleSoft.
+We welcome any type of contribution; raising bugs or directly providing feedback. For that, please visit the official [AMF Github repository](https://github.com/raml-org/api-modeling-framework). Here you also find additional information like on how to [build](https://github.com/raml-org/api-modeling-framework#installation) the different artifacts provided by AMF. 
