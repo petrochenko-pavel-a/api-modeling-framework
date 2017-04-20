@@ -97,4 +97,6 @@ Reference documentation for the ontology can be found [here](https://raml-org.gi
 
 ## Contribution
 
-We welcome any type of contribution; raising bugs or directly providing feedback. For that, please visit the official [AMF Github repository](https://github.com/raml-org/api-modeling-framework).
+If you are interested in contributing some code to this project, thanks! Please first [read and accept the Contributors Agreement](https://api-notebook.anypoint.mulesoft.com/notebooks#bc1cf75a0284268407e4).
+
+To discuss this project, please use its [github issues](https://github.com/raml-org/api-modeling-framework/issues) or the [RAML forum](http://forums.raml.org/).
