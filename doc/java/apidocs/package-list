@@ -1,0 +1,9 @@
+org.raml.amf
+org.raml.amf.core
+org.raml.amf.core.document
+org.raml.amf.core.domain
+org.raml.amf.core.exceptions
+org.raml.amf.examples
+org.raml.amf.generators
+org.raml.amf.parsers
+org.raml.amf.utils
