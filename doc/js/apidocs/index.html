@@ -1,0 +1,354 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>AMF JS Bindings</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">AMF JS Bindings</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> AMF JS Bindings</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="amf-js-programming-guide">AMF JS Programming Guide</h1>
+				<p>JavaScript wrapping is available as a node NPM package.
+				This package provides a JS friendly interface on top of the native ClojureScript code of the library.</p>
+				<h2 id="compiling">Compiling</h2>
+				<p>At this moment we don&#39;t provide any artifacts in any repository to use AMF or these JS bindings, so they must be built manually with the help of Leiningen.
+				In order to build the NPM package, you first need to generate the node version of the AMF library. This can be accomplished using the following command:</p>
+				<pre><code class="lang-bash">$ lein node
+</code></pre>
+				<p>When the compilation has finished the node package will be available in <code>output/node</code>. Next step is linking the package directory so it will be avaliable for NPM.</p>
+				<pre><code class="lang-bash">$ <span class="hljs-built_in">cd</span> output/node &amp;&amp; npm link
+</code></pre>
+				<p>Finally we need to compile and link the JS bindings package. From the AMF top level directory execute:</p>
+				<pre><code class="lang-bash">$ <span class="hljs-built_in">cd</span> bindings/js
+$ npm link api-modeling-framework
+$ npm install
+$ tsc
+$ npm link
+</code></pre>
+				<p>Now you can go to your NPM project directory and link the AMF JS bindings:</p>
+				<pre><code class="lang-bash">$ npm link amf-js
+</code></pre>
+				<p>If you start a node REPL in your project now you should be able to require the library:</p>
+				<pre><code class="lang-javascript"><span class="hljs-built_in">require</span>(<span class="hljs-string">"amf-js"</span>)
+</code></pre>
+				<h2 id="parsing">Parsing</h2>
+				<p>Parsers can be found in the <code>parsers</code> package of the project. They can be build using the factories in the <code>AMF</code> class</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> apiFile = <span class="hljs-string">"file:///path/to/other-examples/world-music-api/api.raml"</span>;
+AMF.RAMLParser.parseFile(apiFile, {}, <span class="hljs-function">(<span class="hljs-params">err, model</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (err != <span class="hljs-literal">null</span>) {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Created model from file <span class="hljs-subst">${model.location()}</span>`</span>);
+    }
+});
+</code></pre>
+				<p>Parsers are include for RAML, OpenAPI and the JSON-LD serialisation of the AMF model.</p>
+				<p>Parsers can accept options, including a hash-map of URLs to local directories that will be used to resolve references in the parsed documents.</p>
+				<p>For instance, in the next snippet all remote references to the URLs prefixed by <code>http://test.com/worldmusic</code> will be resolved looking into the local directory.</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> apiFile = <span class="hljs-string">"http://test.com/something/api.raml"</span>;
+<span class="hljs-keyword">let</span> cacheDirs = {<span class="hljs-string">'cacheDirs'</span>: {<span class="hljs-string">"http://test.com/something"</span>:<span class="hljs-string">"file:///path/to/other-examples/world-music-api/api.raml"</span>}};
+AMF.RAMLParser.parseFile(apiFile, cacheDirs, <span class="hljs-function">(<span class="hljs-params">err, model</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (err != <span class="hljs-literal">null</span>) {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Created model from file <span class="hljs-subst">${model.location()}</span>`</span>);
+    }
+});
+</code></pre>
+				<p>The original parsed text can be retrieved using the <code>rawText</code> method.</p>
+				<h2 id="navigating-the-document-model">Navigating the Document Model</h2>
+				<p>The parsing process will return an instance of one of the subclasses of <code>DocumentModel</code>.
+				Depending on what is the parsed file, a <code>Document</code>, a <code>Fragment</code> or a <code>Module</code> instance will be returned.</p>
+				<p>No matter what is the actual Document Model class, the returned model will also include references to all linked documents in the model.</p>
+				<p>These references can be listed using the <code>references</code> method, and new instances of <code>DocumentModel</code> can be built for these references using the <code>modelForReference</code> method:</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> referenceModels = model
+  .references()
+  .map(<span class="hljs-function"><span class="hljs-params">ref</span> =&gt;</span> model.modelForReference(ref));
+</code></pre>
+				<h2 id="applying-resolution">Applying resolution</h2>
+				<p>To run the resolution algorithm and combine all the documents from the Document Model into a single Domain Model description, the method <code>resolve</code> can be invoked.</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">const</span> resolvedModel: DocumentModel = model.resolve();
+</code></pre>
+				<h2 id="accessing-the-domain-model">Accessing the Domain Model</h2>
+				<p>The parsed Domain Model can be retrieved from the Document Model instance using the appropriate accessor.</p>
+				<p>Fragments return the encoded Domain Model element using the <code>encodes</code> method from the <code>document.EncodesDomainModel</code> interface.
+					Modules returns the list of declared Domain Model elements using the <code>declares</code> method from the <code>document.DeclaresDomainModel</code> interface.
+				Documents can use both methods to retrieve the top level encoded element and the list of declared elements in the root element.</p>
+				<pre><code class="lang-typesocript">if (model instanceof EncodesDomainModel) {
+  console.log(model.encodes());
+}
+
+if (targetModel instanceof DeclaresDomainModel) {
+  model.declares().foreach(decl =&gt; console.log(decl);
+}
+</code></pre>
+				<h2 id="navigating-and-mutating-the-domain-model">Navigating and mutating the Domain Model</h2>
+				<p>The Domain Model includes matching classes for all elements in the AMF Domain Model.
+				These getters and setters can be used to navigate and mutate the model. Please, refer to the <a href="https://raml-org.github.io/api-modeling-framework/doc/js/apidocs/index.html">documentation</a> for more details.</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">let</span> endpoints = api.getEndPoints();
+
+<span class="hljs-comment">// updating endponts</span>
+<span class="hljs-keyword">const</span> before = endpoints.length;
+<span class="hljs-keyword">let</span> newEndpoint = EndPoint.build(<span class="hljs-string">"http://test.com/external/1"</span>);
+newEndpoint.setPath(<span class="hljs-string">"/lala"</span>);
+
+<span class="hljs-keyword">const</span> afterBreakPoints = endpoints.concat([newEndpoint]);
+api.setEndPoints(afterBreakPoints);
+
+<span class="hljs-comment">// updated endpoints</span>
+endpoints = api.getEndPoints();
+<span class="hljs-keyword">const</span> after = endpoints.length;
+
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Should be true "</span> + (after = before + <span class="hljs-number">1</span>));
+</code></pre>
+				<h2 id="serialisation">Serialisation</h2>
+				<p>AMF includes generators capable of serialising the AMF model back into one of the supported syntaxes. The method <code>generateString</code> can be used to generate a String representation, and the method <code>generateFile</code> can be used to dump the serialised model directly into a file.
+				Factory methods for each generator can be found in the <code>AMF</code> class.</p>
+				<pre><code class="lang-typescript">AMF.RAMLGenerator.generateString(model, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-function">(<span class="hljs-params">e, r</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(r != <span class="hljs-literal">null</span>));
+AMF.OpenAPIGenerator.generateString(model, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-function">(<span class="hljs-params">e, r</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(r != <span class="hljs-literal">null</span>));
+AMF.JSONLDGenerator.generateString(model, <span class="hljs-literal">null</span>, {<span class="hljs-string">'full-graph?'</span>: <span class="hljs-literal">true</span>, <span class="hljs-string">'source-maps?'</span>: <span class="hljs-literal">true</span>}, <span class="hljs-function">(<span class="hljs-params">e, r</span>) =&gt;</span> r != <span class="hljs-literal">null</span>);
+</code></pre>
+				<p>Two options are available when generating JSON-LD documents.</p>
+				<ul>
+					<li><code>full-graph?</code> will nest the JSON-LD graphs for the referenced documents in the model to be serialised, otherwise only URIs will be generated.</li>
+					<li><code>source-maps?</code> enables or disables the generation of source maps JSON-LD information in the output.</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_clojure_.html">"src/<wbr>Clojure"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_model_.html">"src/core/<wbr>Model"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_document_declaresdomainmodel_.html">"src/core/document/<wbr>Declares<wbr>Domain<wbr>Model"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_document_document_.html">"src/core/document/<wbr>Document"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_document_documentmodel_.html">"src/core/document/<wbr>Document<wbr>Model"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_document_encodesdomainmodel_.html">"src/core/document/<wbr>Encodes<wbr>Domain<wbr>Model"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_document_fragment_.html">"src/core/document/<wbr>Fragment"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_document_module_.html">"src/core/document/<wbr>Module"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_apidocumentation_.html">"src/core/domain/APIDocumentation"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_domainmodel_.html">"src/core/domain/<wbr>Domain<wbr>Model"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_endpoint_.html">"src/core/domain/<wbr>End<wbr>Point"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_genericoperationunit_.html">"src/core/domain/<wbr>Generic<wbr>Operation<wbr>Unit"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_genericparameter_.html">"src/core/domain/<wbr>Generic<wbr>Parameter"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_generictag_.html">"src/core/domain/<wbr>Generic<wbr>Tag"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_header_.html">"src/core/domain/<wbr>Header"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_operation_.html">"src/core/domain/<wbr>Operation"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_parameter_.html">"src/core/domain/<wbr>Parameter"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_payload_.html">"src/core/domain/<wbr>Payload"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_request_.html">"src/core/domain/<wbr>Request"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_response_.html">"src/core/domain/<wbr>Response"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_sourcemap_.html">"src/core/domain/<wbr>Source<wbr>Map"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_core_domain_type_.html">"src/core/domain/<wbr>Type"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_examples_basicfunctionality_.html">"src/examples/<wbr>Basic<wbr>Functionality"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_generators_amfjsonldgenerator_.html">"src/generators/AMFJSONLDGenerator"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_generators_basegenerator_.html">"src/generators/<wbr>Base<wbr>Generator"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_generators_generationoptions_.html">"src/generators/<wbr>Generation<wbr>Options"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_generators_openapigenerator_.html">"src/generators/<wbr>OpenAPIGenerator"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_generators_ramlgenerator_.html">"src/generators/RAMLGenerator"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_parsers_amfjsonldparser_.html">"src/parsers/AMFJSONLDParser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_parsers_baseparser_.html">"src/parsers/<wbr>Base<wbr>Parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_parsers_openapiparser_.html">"src/parsers/<wbr>OpenAPIParser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_parsers_parsingoptions_.html">"src/parsers/<wbr>Parsing<wbr>Options"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_parsers_ramlparser_.html">"src/parsers/RAMLParser"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
