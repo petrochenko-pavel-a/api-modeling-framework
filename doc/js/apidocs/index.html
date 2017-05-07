@@ -152,7 +152,7 @@ api.setEndPoints(afterBreakPoints);
 endpoints = api.getEndPoints();
 <span class="hljs-keyword">const</span> after = endpoints.length;
 
-<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Should be true "</span> + (after = before + <span class="hljs-number">1</span>));
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Should be true "</span> + (after == before + <span class="hljs-number">1</span>));
 </code></pre>
 				<h2 id="serialisation">Serialisation</h2>
 				<p>AMF includes generators capable of serialising the AMF model back into one of the supported syntaxes. The method <code>generateString</code> can be used to generate a String representation, and the method <code>generateFile</code> can be used to dump the serialised model directly into a file.
