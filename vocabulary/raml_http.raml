@@ -65,17 +65,20 @@ classTerms:
   EndPoint:
     extends: raml-doc.DomainElement
     displayName: End Point
+
     description: EndPoint in the API holding a number of executable operations
     properties:
       - schema-org.name
       - schema-org.description
       - path
       - hydra.supportedOperation
+      - api
 
   hydra.Operation:
     extends: raml-doc.DomainElement
     description: Action that can be executed using a particular HTTP invocation
-
+    properties:
+      - containingEndpoint
   hydra.Request:
     extends: raml-doc.DomainElement
     description: Request information for an operation
@@ -106,6 +109,13 @@ classTerms:
       - schema
 
 propertyTerms:
+  api:
+    range: schema-org.WebAPI
+    inverseOf: endpoint
+
+  containingEndpoint:
+    range: hydra.Operation
+    inverseOf: hydra.supportedOperation
 
   schema-org.name:
     displayName: name
@@ -181,11 +191,15 @@ propertyTerms:
     name: end-points
     description: End points defined in the api
     range: EndPoint
+    inverseOf: api
 
   path:
     name: path
     description: Path template for an endpoint
     range: License
+
+  parent:
+
 
   hydra.supportedOperation:
     name: supported operations
@@ -206,6 +220,16 @@ propertyTerms:
     name: returns
     description: Response data returned by the operation
     range: hydra.Response
+
+  operationContainingResponse:
+    domain: hydra.Response
+    range: hydra.Operation
+    inverseOf: hydra.returns
+
+  operationContainingParameter:
+    domain: Parameter
+    range: hydra.Operation
+    inverseOf: parameter
 
   statusCode:
     description: HTTP status code returned by a response
